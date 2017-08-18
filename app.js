@@ -11,7 +11,7 @@ app.set ('views', './views');
 app.set ('view engine', 'mustache');
 
 app.get('/', function(req, res){
-  res.send('I am totally alive!')
+  res.render('index');
 });
 
 app.listen(3000, function(){
