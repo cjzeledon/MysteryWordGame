@@ -1,0 +1,27 @@
+<!DOCTYPE hmtl>
+<html>
+<head>
+  <title>
+    Mystery Word Game
+  </title>
+</head>
+<body>
+
+  <div class="MysteryGame">
+
+  <header>Mystery Word<header>
+
+  <p>you have {{ guessCountdown }} guesses left.</p>
+
+  <form method="post" action="/">
+    <input type="text" name="mysteryWord">
+    <input type="text" name="mysteryLetter">
+    <input type="submit" value="Make A Guess">
+  </form>
+
+  <p><strong>Letters Guessed:</strong> {{ guessedLetters }}</p>
+
+  </div>
+  
+</body>
+</html>
