@@ -9,5 +9,5 @@ const words = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().sp
 
 
 app.listen('3000' function(){
-  console.log('Node.js totally rule!!');
+  console.log('Node.js totally rule!!')
 });
