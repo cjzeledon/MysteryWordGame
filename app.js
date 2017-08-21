@@ -1,3 +1,4 @@
+// NOTE: STARTING LINE ---------------- DO NOT MESS WITH IT --------------------
 const express = require('express');
 const session = require('express-session');
 const mustacheExpress = require('mustache-express');
@@ -5,13 +6,6 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
 const words = (fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n"));
-// const random = words[Math.floor(Math.random() * words.length) | 0];
-// const leakWord = [];
-
-// const example = ['cat', 'dog', 'horse', 'flea', 'mite', 'shark', 'fish', 'seahorse', 'graywolf'];
-
-// NOTE:  [ ] is an array and { } is an object
-
 app.engine('mustache', mustacheExpress());
 app.set ('views', './views');
 app.set ('view engine', 'mustache');
@@ -20,6 +14,9 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static("views"));
+// NOTE: ENDING LINE ---------------- DO NOT MESS WITH IT --------------------
 
 // returns a random word
 function SelectWordRandom() {
@@ -47,59 +44,63 @@ function SecretWordBlanks(request) {
 
 
 app.get('/', function(request, respond){
-  // The function SelectWordRandom will randomly select a word from the massive list of computer words it has in store.
-
   if (request.session.RandomWord === undefined) {
     request.session.RandomWord = SelectWordRandom();
     request.session.HiddenAnswer = SecretWordAnswer(request);
     request.session.BlankUnderscores = SecretWordBlanks(request);
   }
 
-  // function RandomWord(){
-  //   const random = words[Math.floor(Math.random() * words.length) | 0];
-  //   const leakWord = []; // this is where the answer is
-  //   const underscore = []; // this starts out as blanks
-  //
-  //   for (let i = 0; i < random.length; i++){
-  //     leakWord.push (random.charAt(i))
-  //   };
-  //
-  //   for (let i =0; i < leakWord.length; i++){
-  //     underscore.push("_");
-  //   }
-  //   console.log(underscore);
-  //   return underscore;
-  // };
-  //
+  console.log(request.session.RandomWord);
+
   respond.render('index', {
     DropWord: {
-      Hint: request.session.BlankUnderscores
+      Hint: request.session.BlankUnderscores,
     }
   });
-  // ------------------------END ---------------------
-
 });
 
 app.post ('/', function(request, respond){
   // check the word by looping over every letter
-  // const DropWord = request.body.mysteryWord;
-  // const GuessLetter = request.body.mysteryWord;
+  const GuessALetter = request.body.GiveMeALetter;
+  const wrongLetter = [];
 
-  // respond.render('index');
-  // for (i = 0; i < request.session.RandomWord; i++){
-  //   if (request.session.RandomWord[i] === )
+  console.log(GuessALetter);
+  console.log(request.session.HiddenAnswer);
+  console.log(request.session.BlankUnderscores);
+  console.log(request.session.RandomWord);
+
+  for (let i = 0; i < request.session.RandomWord.length; i++){
+    if (request.session.HiddenAnswer[i] === GuessALetter){
+      request.session.BlankUnderscores[i] = (GuessALetter);
+    }
+  //  wrongLetter.push(GuessALetter);
+  }
+
+// Since this is a boolean, use the idea that if it does equal to that value, somehow find a way to ignore it. If it does NOT equal to it, then add it to the list of incorrect letters but only once if needed.
+  // for (let i = 0; i <request.session.RandomWord.length; i++){
+  //   if (request.session.HiddenAnswer[i] !== GuessALetter){
+  //     break;
+  //   } else {
+  //       wrongLetter.push(GuessALetter);
+  //     }
+  //   // use the += to add in a letter and NOT replace it!
   // }
-  //
-  // respond.render('index', {
-  //   GuessLetter: request.session.WHATEVER;
-  //   }
-  // });
+
+  for (let i = 0; i <request.session.RandomWord.length; i++){
+    if (request.session.HiddenAnswer[i] !== GuessALetter){
+      wrongLetter.push(GuessALetter);
+      break;
+      }
+    // use the += to add in a letter and NOT replace it!
+  }
+
+  respond.render('index', {
+    DropWord: {
+      Hint: request.session.BlankUnderscores,
+      IncorrectLetters: wrongLetter,
+    }
+  });
 });
-
-
-
-
-
 
 
 app.listen(3000, function(){

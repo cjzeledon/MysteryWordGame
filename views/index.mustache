@@ -4,6 +4,7 @@
   <title>
     Mystery Word Game
   </title>
+  <link rel="stylesheet" type="text/css" href="/styles.css">
 </head>
 <body>
 
@@ -14,16 +15,20 @@
   <p>you have {{ guessCountdown }} guesses left.</p>
 
   <form method="post" action="/">
-    <p>
+    <p class="DropWordGuess">
         {{ #DropWord }}
           {{ Hint }}
         {{ /DropWord }}
     <p>
-    <p><input type="text" name="mysteryLetter"><p>
+    <p><input type="text" name="GiveMeALetter"><p>
     <p><input type="submit" value="Make A Guess"><p>
   </form>
 
-  <p><strong>Letters Guessed:</strong> {{ guessedLetters }}</p>
+  <p><strong>Incorrect Letters Guessed:</strong>
+    {{ #DropWord }}
+    {{ IncorrectLetters }}
+    {{ /DropWord }}
+  </p>
 
   </div>
 
