@@ -14,7 +14,11 @@
   <p>you have {{ guessCountdown }} guesses left.</p>
 
   <form method="post" action="/">
-    <p><div id="mysteryWord"></div><p>
+    <p>
+        {{ #DropWord }}
+          {{ Hint }}
+        {{ /DropWord }}
+    <p>
     <p><input type="text" name="mysteryLetter"><p>
     <p><input type="submit" value="Make A Guess"><p>
   </form>
