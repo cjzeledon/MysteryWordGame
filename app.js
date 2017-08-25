@@ -1,4 +1,5 @@
 // NOTE: STARTING LINE ---------------- DO NOT MESS WITH IT --------------------
+
 const express = require('express');
 const session = require('express-session');
 const mustacheExpress = require('mustache-express');
@@ -6,6 +7,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
 const words = (fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n"));
+
 app.engine('mustache', mustacheExpress());
 app.set ('views', './views');
 app.set ('view engine', 'mustache');
@@ -14,8 +16,10 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("views"));
+
 // NOTE: ENDING LINE ---------------- DO NOT MESS WITH IT --------------------
 
 // returns a random word
@@ -43,15 +47,17 @@ function SecretWordBlanks(request) {
 }
 
 
+// If the session is not defined, it will set all the later session variables equal to previous functions that does all the work for it.
 app.get('/', function(request, respond){
-  if (request.session.RandomWord === undefined) {
+  if(request.session.RandomWord === undefined) {
     request.session.RandomWord = SelectWordRandom();
     request.session.HiddenAnswer = SecretWordAnswer(request);
     request.session.BlankUnderscores = SecretWordBlanks(request);
+    request.session.NumberofGuesses = 8;
+    request.session.AlreadyFreakinGuessed = [ ];
   }
 
-  console.log(request.session.RandomWord);
-
+  // renders the mustache page to html format
   respond.render('index', {
     DropWord: {
       Hint: request.session.BlankUnderscores,
@@ -61,46 +67,68 @@ app.get('/', function(request, respond){
 
 app.post ('/', function(request, respond){
   // check the word by looping over every letter
-  const GuessALetter = request.body.GiveMeALetter;
-  const wrongLetter = [];
+  let GuessALetter = request.body.GiveMeALetter;
+  let goodGuess = false;
+  let Sameness = false;
+  let gameOver = false;
 
-  console.log(GuessALetter);
-  console.log(request.session.HiddenAnswer);
-  console.log(request.session.BlankUnderscores);
-  console.log(request.session.RandomWord);
+  // console.log(GuessALetter);
+  // console.log(request.session.HiddenAnswer);
+  // console.log(request.session.BlankUnderscores);
+  // console.log(request.session.RandomWord);
+  // console.log(request.session.HiddenAnswer.length);
 
+  for (let i = 0; i < request.session.AlreadyFreakinGuessed.length; i++){
+    if (request.session.AlreadyFreakinGuessed[i] === GuessALetter){
+      Sameness = true;
+    }
+  }
+  console.log(Sameness);
+
+ //When a letter is correct, it will replace the underscore letter with actual letter.
   for (let i = 0; i < request.session.RandomWord.length; i++){
     if (request.session.HiddenAnswer[i] === GuessALetter){
       request.session.BlankUnderscores[i] = (GuessALetter);
+      goodGuess = true;
     }
-  //  wrongLetter.push(GuessALetter);
+  };
+
+
+  if (goodGuess === false) {
+    request.session.NumberofGuesses--;
   }
 
-// Since this is a boolean, use the idea that if it does equal to that value, somehow find a way to ignore it. If it does NOT equal to it, then add it to the list of incorrect letters but only once if needed.
-  // for (let i = 0; i <request.session.RandomWord.length; i++){
-  //   if (request.session.HiddenAnswer[i] !== GuessALetter){
-  //     break;
-  //   } else {
-  //       wrongLetter.push(GuessALetter);
-  //     }
-  //   // use the += to add in a letter and NOT replace it!
-  // }
+  //if the boolean is false, it will only add letter once.
+  if (Sameness === false){
+    request.session.AlreadyFreakinGuessed.unshift(GuessALetter);
+  };
 
-  for (let i = 0; i <request.session.RandomWord.length; i++){
-    if (request.session.HiddenAnswer[i] !== GuessALetter){
-      wrongLetter.push(GuessALetter);
-      break;
-      }
-    // use the += to add in a letter and NOT replace it!
+  //If the number of guesses are down to 0, it is game over and the user will be given the answer that they failed to guess.
+  if (request.session.NumberofGuesses === 0) {
+    gameOver = true;
+    request.session.BlankUnderscores = [];
   }
 
+  // Renders the information to mustsache page.
   respond.render('index', {
     DropWord: {
       Hint: request.session.BlankUnderscores,
-      IncorrectLetters: wrongLetter,
+      LettersAlreadyGuessed: request.session.AlreadyFreakinGuessed,
+      guessCountdown: request.session.NumberofGuesses,
+      samenessAGAIN: Sameness,
+      Answer: request.session.RandomWord,
+      gameOver: gameOver
     }
-  });
+  })
 });
+
+// app.get('/signup', function(request, respond){
+//   respond.render('signup');
+// })
+//
+// app.get('/login', function(request, respond){
+//   respond.render('login');
+// })
 
 
 app.listen(3000, function(){

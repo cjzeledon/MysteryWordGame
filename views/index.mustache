@@ -10,25 +10,26 @@
 
   <div class="MysteryGame">
 
-  <header>Mystery Word<header>
+  <header>Mystery Word Game<header>
 
-  <p>you have {{ guessCountdown }} guesses left.</p>
+  <p>you have {{ DropWord.guessCountdown }} guesses left.</p>
 
   <form method="post" action="/">
     <p class="DropWordGuess">
-        {{ #DropWord }}
-          {{ Hint }}
-        {{ /DropWord }}
+        {{ #DropWord.Hint }}
+          {{ . }}
+        {{ /DropWord.Hint }}
+        {{ #DropWord.gameOver}}
+        {{ DropWord.Answer }}
+        {{ /DropWord.gameOver }}
     <p>
-    <p><input type="text" name="GiveMeALetter"><p>
+    <p><input type="text" name="GiveMeALetter" maxlength="1"><p>
     <p><input type="submit" value="Make A Guess"><p>
   </form>
 
-  <p><strong>Incorrect Letters Guessed:</strong>
-    {{ #DropWord }}
-    {{ IncorrectLetters }}
-    {{ /DropWord }}
-  </p>
+  <p>{{ #DropWord.samenessAGAIN }} You already freakin' guessed this letter. TRY AGAIN. {{ /DropWord.samenessAGAIN }}</p>
+
+  <p><strong>Letters Guessed: {{ DropWord.LettersAlreadyGuessed }}</strong></p>
 
   </div>
 

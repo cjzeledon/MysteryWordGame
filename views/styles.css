@@ -52,3 +52,19 @@ input[type=text]{
   height: 35px;
   text-align: center;
 }
+
+.LogSign input[type=text]{
+  border: 2px solid white;
+  border-radius: 8px;
+  background-color: white;
+  height: 35px;
+  text-align: center;
+}
+
+.LogSign input[type=password]{
+  border: 2px solid white;
+  border-radius: 8px;
+  background-color: white;
+  height: 35px;
+  text-align: center;
+}
