@@ -4,6 +4,7 @@
   "description": "Contains a weekly project where we will be building a game with node and express. ",
   "main": "index.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Claudia Zeledon",
