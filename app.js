@@ -131,6 +131,10 @@ app.post ('/', function(request, respond){
 // })
 
 
-app.listen(3000, function(){
-  console.log('Node.js totally rule!!')
+// app.listen(3000, function(){
+//   console.log('Node.js totally rule!!')
+// });
+//
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
