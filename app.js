@@ -6,7 +6,13 @@ const mustacheExpress = require('mustache-express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
-const words = (fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n"));
+// const words = (fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n"));
+const words = ["vaccum", "television", "cat", "dog", "kindle", "amazon",
+"shark", "lightning", "lost", "savannah", "america", "bean", "purse", "door",
+"international", "communication", "square", "rectangle", "diamond", "circle", "triangle",
+"oval", "legacy", "supernatural", "ignorance", "human", "measurement", "constant",
+"insistence", "triplet", "omnipotent", "invasion", "fashionista", "indifferent",
+"multicolor", "burgundy", "teal"]
 
 app.engine('mustache', mustacheExpress());
 app.set ('views', './views');
